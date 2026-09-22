@@ -241,13 +241,13 @@ details.data table{margin-top:10px}
 details.data .tbl-wrap{max-height:280px;overflow:auto}
 
 /* theme bars */
-.tb-row{display:grid;grid-template-columns:minmax(150px,1.3fr) minmax(0,3fr) 70px 70px 70px;gap:16px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:.92rem}
+.tb-row{display:grid;grid-template-columns:minmax(150px,1.3fr) minmax(0,3fr) 70px 76px 70px 70px;gap:16px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:.92rem}
 .tb-row:last-child{border-bottom:0}
 .tb-head{color:var(--muted);font-size:.8rem;padding-bottom:8px}
 .tb-bar{height:10px;background:var(--bar);border-radius:3px;transition:width .6s var(--ease)}
 .tb-bar.hl{background:var(--accent)}
 .tb-row .num{text-align:right;font-family:var(--mono);font-feature-settings:"tnum"}
-@media (max-width:720px){.tb-row{grid-template-columns:1fr 60px 60px 60px}.tb-row .bw{grid-column:1 / -1;order:5}}
+@media (max-width:720px){.tb-row{grid-template-columns:1fr 60px 60px 60px 60px}.tb-row .bw{grid-column:1 / -1;order:5}}
 
 /* callouts */
 .note{border-left:2px solid var(--accent);padding:4px 0 4px 18px;margin:28px 0}
@@ -626,7 +626,7 @@ td.bad{background:var(--accent-soft);color:var(--accent);font-weight:600}
         <div class="rung"><h4>Cut waste, take the quick wins</h4><p>Negatives, brand exclusions, status fixes and a desktop-weighted device test. Money saved here funds the next stages.</p><div class="gate"><b>Gate:</b> tags verified first, so nothing is cut on false data.</div></div>
         <div class="rung"><h4>Buy the rank we are missing</h4><p>Improve Quality Score components and ad rank: ad relevance, landing pages, assets, exact-match structure. Then step Target CPA up in a 50/50 experiment on the largest campaign.</p><div class="gate"><b>Gate:</b> incremental CPL under the allowable CPL for two weeks, in steps of 15% or less.</div></div>
         <div class="rung"><h4>Raise conversion rate and lead quality</h4><p>One landing page per intent, faster forms, honest pre-qualification. A better funnel makes every other lever cheaper.</p><div class="gate"><b>Gate:</b> A/B test with a pre-agreed sample size, judged on funded rate as well as form fills.</div></div>
-        <div class="rung"><h4>Add a second surface, carefully</h4><p>A low-budget remarketing campaign first, then Demand Gen as the natural step up from Search. Microsoft Advertising once wasted budget is cut. Display and other AI campaign types wait until the CRM is linked.</p><div class="gate"><b>Gate:</b> base problems fixed and CRM data flowing, so new spend is judged on the same yardstick.</div></div>
+        <div class="rung"><h4>Add a second surface, carefully</h4><p>A low-budget remarketing campaign first, then Demand Gen as the natural step up from Search. Import to Microsoft Advertising once wasted budget is cut: an older audience at a cheaper click. AI Max for Search is worth a capped experiment with brand exclusions and a hold-out, so we can read the incremental effect. Display and the other AI campaign types wait until the CRM is linked.</p><div class="gate"><b>Gate:</b> base problems fixed and CRM data flowing, so new spend is judged on the same yardstick.</div></div>
       </div>
 
       <div class="stick reveal">
@@ -1117,8 +1117,8 @@ $$("[data-tab]").forEach(b => b.addEventListener("click", () => {
   const draw = () => {
     const s = [...rows].sort((a,b) => key==="cpl" ? b.cpl-a.cpl : b[key]-a[key]);
     const max = Math.max(...s.map(r => r[key]));
-    $("#themes").innerHTML = `<div class="tb-row tb-head"><span>Theme</span><span class="bw"></span><span class="num">Spend</span><span class="num">CPL</span><span class="num">Conv. rate</span></div>` +
-      s.map(r => `<div class="tb-row"><span>${r.th}</span><span class="bw"><div class="tb-bar ${r.cpl>=8?"hl":""}" style="width:${(r[key]/max*100).toFixed(1)}%"></div></span><span class="num">${gbp(r.cost)}</span><span class="num">${gbp(r.cpl,2)}</span><span class="num">${pct(r.cvr,0)}</span></div>`).join("") +
+    $("#themes").innerHTML = `<div class="tb-row tb-head"><span>Theme</span><span class="bw"></span><span class="num">Spend</span><span class="num">Conversions</span><span class="num">CPL</span><span class="num">Conv. rate</span></div>` +
+      s.map(r => `<div class="tb-row"><span>${r.th}</span><span class="bw"><div class="tb-bar ${r.cpl>=8?"hl":""}" style="width:${(r[key]/max*100).toFixed(1)}%"></div></span><span class="num">${gbp(r.cost)}</span><span class="num">${int(r.cv)}</span><span class="num">${gbp(r.cpl,2)}</span><span class="num">${pct(r.cvr,0)}</span></div>`).join("") +
       `<p class="muted" style="font-size:.82rem;margin-top:14px">Accent bars mark themes with CPL of £8 or more. Bar length follows the selected sort.</p>`;
   };
   $$("#theme-sort button").forEach(b => b.addEventListener("click", () => { key = b.dataset.k; $$("#theme-sort button").forEach(x => x.setAttribute("aria-pressed", x===b)); draw(); }));
