@@ -367,6 +367,14 @@ details.hyp[open] summary i{transform:rotate(180deg)}
 .cmp-bar .v{font-family:var(--mono);text-align:right}
 .cmp-bar .bw{display:flex;flex-direction:column;gap:2px}
 .cmp-bar .bw small{color:var(--muted);font-size:.76rem}
+.ba-row{padding:14px 0;border-bottom:1px solid var(--line)}
+.ba-row:first-child{padding-top:0}
+.ba-row:last-child{border-bottom:0;padding-bottom:0}
+.ba-row .lbl{font-size:.88rem;color:var(--ink-2);margin-bottom:6px}
+.ba-row .vals{display:flex;align-items:baseline;gap:12px;font-family:var(--mono);font-feature-settings:"tnum"}
+.ba-row .vals .before{font-size:1.3rem;color:var(--ink-2)}
+.ba-row .vals .arrow{color:var(--muted);font-size:1.1rem}
+.ba-row .vals .after{font-size:1.6rem;font-weight:500;color:var(--accent)}
 
 /* branch */
 .branch{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:48px;align-items:start}
@@ -799,7 +807,7 @@ td.bad{background:var(--accent-soft);color:var(--accent);font-weight:600}
       <h3 class="reveal">What the Maximise Clicks response tells us</h3>
       <p class="reveal">I read the test as Various 6 tCPA, the only campaign whose spend rebounded at a CPC of £2.90 against a £3 cap. Change history should confirm it.</p>
       <div class="two" style="margin-top:28px">
-        <div class="panel reveal"><p style="font-size:.92rem;margin-bottom:20px">Cost per click barely moved, £2.28 to £2.90. What changed is how many clicks became leads: 38% before, down to 7&ndash;9%. That is nearly all of the jump below.</p><div class="cmp" id="cmp"></div><p class="muted" style="font-size:.82rem;margin-top:16px">Baseline: 27 Jul to 10 Aug. Test: week of 31 Aug. Internal figures use the brief (about £400 and 15 leads) against Google's click count.</p></div>
+        <div class="panel reveal"><div id="cmp"></div><p class="muted" style="font-size:.82rem;margin-top:16px">Before: average of 27 Jul to 10 Aug. After: the Maximise Clicks week, 31 Aug. Cost per lead is a range because Google's count and the business's own count of that week's leads disagree (10.5 vs 15) &mdash; itself a finding, not a rounding choice.</p></div>
         <div class="reveal">
           <ul class="list">
             <li><b>It is a temporary fix, not a strategy.</b> Delivery returned, so bids were what was blocking it. That part is useful to know.</li>
@@ -1340,14 +1348,12 @@ $$("[data-tab]").forEach(b => b.addEventListener("click", () => {
 {
   const c = D.camps["Various 6 tCPA"]; const idx = [8,9,10], t = N-1;
   const b = {cost:sum(idx.map(i=>c.cost[i])), cl:sum(idx.map(i=>c.clicks[i])), cv:sum(idx.map(i=>c.conv[i]))};
-  const rows = [
-    {l:"Cost per lead", base:b.cost/b.cv, test:400/15, testG:c.cost[t]/c.conv[t], f:v=>gbp(v,0)}
-  ];
-  $("#cmp").innerHTML = rows.map(r => {
-    const mx = Math.max(r.base, r.test, r.testG||0);
-    const bar = (v, hl, lab, sub) => `<div class="cmp-bar"><div class="bw"><div class="b ${hl?"hl":""}" style="width:${(v/mx*100).toFixed(1)}%"></div></div><div class="v">${r.f(v)}<br><small class="muted" style="font-family:var(--sans)">${lab}</small></div></div>`;
-    return `<div class="cmp-row"><div class="lbl">${r.l}</div><div class="cmp-bars">${bar(r.base,false,"Target CPA")}${bar(r.test,true,r.tl||"Max Clicks, internal")}${r.testG!=null?bar(r.testG,true,"Max Clicks, Google"):""}</div></div>`;
-  }).join("");
+  const cpcBefore = b.cost/b.cl, cpcAfter = c.cost[t]/c.clicks[t];
+  const cplBefore = b.cost/b.cv, cplAfterLo = Math.min(400/15, c.cost[t]/c.conv[t]), cplAfterHi = Math.max(400/15, c.cost[t]/c.conv[t]);
+  $("#cmp").innerHTML = `
+    <div class="ba-row"><div class="lbl">Cost per click</div><div class="vals"><span class="before">${gbp(cpcBefore,2)}</span><span class="arrow">&rarr;</span><span class="after">${gbp(cpcAfter,2)}</span></div></div>
+    <div class="ba-row"><div class="lbl">Cost per lead</div><div class="vals"><span class="before">${gbp(cplBefore,2)}</span><span class="arrow">&rarr;</span><span class="after">${gbp(cplAfterLo,0)}&ndash;${gbp(cplAfterHi,0)}</span></div></div>
+  `;
 }
 
 })();
