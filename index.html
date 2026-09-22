@@ -715,14 +715,14 @@ td.bad{background:var(--accent-soft);color:var(--accent);font-weight:600}
 
     <div class="sub">
       <h3 class="reveal">Why it changes the answer</h3>
-      <p class="reveal">Try it. The CPL column comes from the account. The stage rates are placeholders I have invented to show the mechanic: replace them with CRM rates and the ranking will move.</p>
+      <p class="reveal">The cheapest lead is not always the cheapest customer. Try changing the Funded % below: as it moves, watch the ranking on the right flip.</p>
       <div class="panel reveal calc">
         <div class="tools" style="margin-bottom:12px">
           <label class="field">Allowable cost per funded customer (£)<input type="number" id="allow-cpf" value="60" min="1" step="5"></label>
           <button class="btn" id="calc-reset">Reset placeholders</button>
         </div>
         <div class="tbl-wrap" style="border:0"><table id="t-calc"></table></div>
-        <p class="muted" style="font-size:.84rem;margin-top:14px">Illustrative inputs, not from the workbook. "Rank" 1 is the cheapest. A highlighted rank means the order changes once quality is counted.</p>
+        <p class="muted" style="font-size:.84rem;margin-top:14px">Funded % is an editable placeholder, not from the workbook. Rank 1 is the cheapest. A highlighted rank means the order changes once quality is counted.</p>
       </div>
     </div>
 
@@ -1247,11 +1247,11 @@ $$("[data-tab]").forEach(b => b.addEventListener("click", () => {
   ].map(s => ({...s, cpl: safe(sum(s.cs.map(n=>sum(D.camps[n].cost))), sum(s.cs.map(n=>sum(D.camps[n].conv)))), v:[...s.r]}));
   const draw = () => {
     const allow = +$("#allow-cpf").value || 60;
-    const rows = seg.map(s => ({...s, cc:s.cpl/(s.v[0]/100), ca:s.cpl/(s.v[1]/100), cf:s.cpl/(s.v[2]/100), allowCpl:allow*s.v[2]/100}));
+    const rows = seg.map(s => ({...s, cf:s.cpl/(s.v[2]/100), allowCpl:allow*s.v[2]/100}));
     const rk = (arr, key) => { const o = [...arr].sort((a,b)=>a[key]-b[key]); return arr.map(a => o.indexOf(a)+1); };
     const r1 = rk(rows,"cpl"), r2 = rk(rows,"cf");
-    $("#t-calc").innerHTML = "<thead><tr><th>Segment</th><th class=\"num\">CPL</th><th class=\"num\">Contacted %</th><th class=\"num\">Approved %</th><th class=\"num\">Funded %</th><th class=\"num\">Per contacted</th><th class=\"num\">Per approved</th><th class=\"num\">Per funded</th><th class=\"num\">Allowable CPL</th><th class=\"num\">Rank: CPL</th><th class=\"num\">Rank: funded</th></tr></thead><tbody>" +
-      rows.map((r,i) => `<tr><td>${r.n}</td><td class="num">${gbp(r.cpl,2)}</td>${[0,1,2].map(j => `<td class="num"><input type="number" min="0.5" max="100" step="0.5" value="${r.v[j]}" data-s="${i}" data-j="${j}" aria-label="${r.n} stage ${j}"></td>`).join("")}<td class="num">${gbp(r.cc,0)}</td><td class="num">${gbp(r.ca,0)}</td><td class="num">${gbp(r.cf,0)}</td><td class="num" style="${r.cpl>r.allowCpl?"color:var(--accent);font-weight:600":""}">${gbp(r.allowCpl,2)}</td><td class="num rank">${r1[i]}</td><td class="num rank ${r1[i]!==r2[i]?"flip":""}">${r2[i]}</td></tr>`).join("") + "</tbody>";
+    $("#t-calc").innerHTML = "<thead><tr><th>Segment</th><th class=\"num\">CPL</th><th class=\"num\">Funded %</th><th class=\"num\">Cost per funded</th><th class=\"num\">Allowable CPL</th><th class=\"num\">Rank: CPL</th><th class=\"num\">Rank: funded</th></tr></thead><tbody>" +
+      rows.map((r,i) => `<tr><td>${r.n}</td><td class="num">${gbp(r.cpl,2)}</td><td class="num"><input type="number" min="0.5" max="100" step="0.5" value="${r.v[2]}" data-s="${i}" data-j="2" aria-label="${r.n} funded %"></td><td class="num">${gbp(r.cf,0)}</td><td class="num" style="${r.cpl>r.allowCpl?"color:var(--accent);font-weight:600":""}">${gbp(r.allowCpl,2)}</td><td class="num rank">${r1[i]}</td><td class="num rank ${r1[i]!==r2[i]?"flip":""}">${r2[i]}</td></tr>`).join("") + "</tbody>";
     $$("#t-calc input").forEach(inp => inp.addEventListener("change", () => { seg[+inp.dataset.s].v[+inp.dataset.j] = Math.max(.5, Math.min(100, +inp.value || .5)); draw(); }));
   };
   $("#allow-cpf").addEventListener("input", draw);
