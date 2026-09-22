@@ -799,7 +799,7 @@ td.bad{background:var(--accent-soft);color:var(--accent);font-weight:600}
       <h3 class="reveal">What the Maximise Clicks response tells us</h3>
       <p class="reveal">I read the test as Various 6 tCPA, the only campaign whose spend rebounded at a CPC of £2.90 against a £3 cap. Change history should confirm it.</p>
       <div class="two" style="margin-top:28px">
-        <div class="panel reveal"><div class="cmp" id="cmp"></div><p class="muted" style="font-size:.82rem;margin-top:16px">Baseline: 27 Jul to 10 Aug. Test: week of 31 Aug. Internal figures use the brief (about £400 and 15 leads) against Google's click count.</p></div>
+        <div class="panel reveal"><p style="font-size:.92rem;margin-bottom:20px">Cost per click barely moved, £2.28 to £2.90. What changed is how many clicks became leads: 38% before, down to 7&ndash;9%. That is nearly all of the jump below.</p><div class="cmp" id="cmp"></div><p class="muted" style="font-size:.82rem;margin-top:16px">Baseline: 27 Jul to 10 Aug. Test: week of 31 Aug. Internal figures use the brief (about £400 and 15 leads) against Google's click count.</p></div>
         <div class="reveal">
           <ul class="list">
             <li><b>It is a temporary fix, not a strategy.</b> Delivery returned, so bids were what was blocking it. That part is useful to know.</li>
@@ -1341,8 +1341,6 @@ $$("[data-tab]").forEach(b => b.addEventListener("click", () => {
   const c = D.camps["Various 6 tCPA"]; const idx = [8,9,10], t = N-1;
   const b = {cost:sum(idx.map(i=>c.cost[i])), cl:sum(idx.map(i=>c.clicks[i])), cv:sum(idx.map(i=>c.conv[i]))};
   const rows = [
-    {l:"Cost per click", base:b.cost/b.cl, test:c.cost[t]/c.clicks[t], tl:"Max Clicks", f:v=>gbp(v,2)},
-    {l:"Clicks that became a lead", base:b.cv/b.cl, test:15/c.clicks[t], testG:c.conv[t]/c.clicks[t], f:v=>pct(v,0)},
     {l:"Cost per lead", base:b.cost/b.cv, test:400/15, testG:c.cost[t]/c.conv[t], f:v=>gbp(v,0)}
   ];
   $("#cmp").innerHTML = rows.map(r => {
