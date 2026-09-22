@@ -657,7 +657,7 @@ td.bad{background:var(--accent-soft);color:var(--accent);font-weight:600}
         <div class="ramp-grid">
           <div>
             <div class="chart" id="c-ramp"></div>
-            <div class="legend"><span><i class="h"></i>Weeks where the marginal CPL is over the limit</span><span><i></i>Blended CPL</span><span><i class="d"></i>Marginal CPL</span></div>
+            <div class="legend"><span><i class="h"></i>Weeks where marginal CPL is over the limit</span><span><i></i>Marginal CPL</span></div>
           </div>
           <div class="tbl-wrap" style="max-height:520px;overflow:auto"><table id="t-ramp"></table></div>
         </div>
@@ -1199,18 +1199,18 @@ $$("[data-tab]").forEach(b => b.addEventListener("click", () => {
         {title:"Spend per week", h:100, fmt:fmtGbp0, series:[{name:"Spend", kind:"bar", values:r.map(x=>x.S), hl:i => r[i].hold}]},
         {title:"Leads per week", h:90, fmt:fmtInt, series:[{name:"Leads", kind:"bar", values:r.map(x=>x.leads), hl:i => r[i].hold}]},
         {title:"Cost per lead", h:120, fmt:fmtCpl, refs:[{v:m.allow, label:"Allowable CPL"}], min:0, max:Math.max(20, niceMax(Math.max(Math.max(...r.map(x=>x.mc))*1.05, m.allow*1.3))),
-          series:[{name:"Marginal CPL", kind:"line", tone:"ink", dash:true, values:r.map(x=>x.mc)},{name:"Blended CPL", kind:"line", values:r.map(x=>x.bl)}]}
+          series:[{name:"Marginal CPL", kind:"line", values:r.map(x=>x.mc)}]}
       ]};
   });
   const out = () => {
     const m = model(), r = m.rows, last = r[r.length-1];
     $("#o-step").textContent = step.value + "%"; $("#o-weeks").textContent = wk.value;
-    $("#t-ramp").innerHTML = "<thead><tr><th>Week</th><th class=\"num\">Spend</th><th class=\"num\">Leads</th><th class=\"num\">Blended CPL</th><th class=\"num\">Marginal CPL</th><th>Decision</th></tr></thead><tbody>" +
-      r.map(x => `<tr><td>${x.w === 0 ? "Now" : x.w}</td><td class="num">${gbp(x.S)}</td><td class="num">${int(x.leads)}</td><td class="num">${gbp(x.bl,2)}</td><td class="num">${gbp(x.mc,2)}</td><td class="${x.hold?"hold":""}">${x.w === 0 ? "Baseline" : x.hold ? "Hold" : "Go"}</td></tr>`).join("") + "</tbody>";
+    $("#t-ramp").innerHTML = "<thead><tr><th>Week</th><th class=\"num\">Spend</th><th class=\"num\">Leads</th><th class=\"num\">Marginal CPL</th><th>Decision</th></tr></thead><tbody>" +
+      r.map(x => `<tr><td>${x.w === 0 ? "Now" : x.w}</td><td class="num">${gbp(x.S)}</td><td class="num">${int(x.leads)}</td><td class="num">${gbp(x.mc,2)}</td><td class="${x.hold?"hold":""}">${x.w === 0 ? "Baseline" : x.hold ? "Hold" : "Go"}</td></tr>`).join("") + "</tbody>";
     $("#rp-out").innerHTML = `<div><div class="n">${gbp(last.S)}</div><small>Weekly spend at week ${m.W}</small></div><div><div class="n">${int(last.leads)}</div><small>Leads a week, ${last.leads-L0>=0?"+":""}${int(last.leads-L0)} on today</small></div><div><div class="n ${last.hold?"warn":""}">${gbp(last.mc,2)}</div><small>What the next lead costs at week ${m.W}</small></div>`;
     const firstHold = r.find(x => x.hold);
-    if (!firstHold) $("#rp-verdict").textContent = `Every step stays under the ${gbp(m.allow,2)} limit at this pace. Blended CPL ends at ${gbp(last.bl,2)}. Even so, check funded rate and quality after each step before moving on.`;
-    else { const prev = r[firstHold.w-1]; $("#rp-verdict").textContent = `Go up to week ${prev.w} (${gbp(prev.S)} a week, blended CPL ${gbp(prev.bl,2)}). From week ${firstHold.w} the next lead costs ${gbp(firstHold.mc,2)}, above ${gbp(m.allow,2)}. Hold there, check funded rate and quality, and only continue if cost per funded still works. Blended CPL alone would have hidden this.`; }
+    if (!firstHold) $("#rp-verdict").textContent = `Every step stays under the ${gbp(m.allow,2)} limit at this pace. Even so, check funded rate and quality after each step before moving on.`;
+    else { const prev = r[firstHold.w-1]; $("#rp-verdict").textContent = `Go up to week ${prev.w} (${gbp(prev.S)} a week). From week ${firstHold.w} the next lead costs ${gbp(firstHold.mc,2)}, above ${gbp(m.allow,2)}. Hold there, check funded rate and quality, and only continue if cost per funded still works.`; }
     draw();
   };
   [step, wk, al].forEach(i => i.addEventListener("input", out));
